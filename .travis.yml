@@ -1,0 +1,45 @@
+dist: xenial
+
+language: python
+python:
+  - "3.7"
+
+cache: pip
+
+addons:
+  postgresql: "10"
+
+services:
+  - postgresql
+
+env:
+  global:
+    - DB_NAME=atlantis
+    - DB_USERNAME=superadmin
+    - DB_PASSWORD=password123
+    - DB_HOST=127.0.0.1
+    - CRUD_USER_PASSWORD=crudpassword
+    - READ_USER_PASSWORD=readpassword
+
+install:
+  - "pip install -r .travis/requirements.txt"
+
+branches:
+  only:
+    - master
+    - develop
+    - /^greenkeeper/.*$/
+
+before_script:
+  - ./.travis/git_branch_checker.sh
+  - "sudo apt-get install libecpg-dev"
+  - ./.travis/create_db.sh
+  - ./backend/db/init_db.sh
+  - "psql -d $DB_NAME -a -f ./backend/db/migrations/0001_create_db.sql"
+  - "curl https://pastebin.com/raw/ZKWDLhxw >> sample.tsv"
+
+script:
+  - ./.travis/style_guide_enforcement.sh
+  - ./.travis/cyclomatic_complexity_checker.sh
+  - ./.travis/maintainability_checker.sh
+  - ./.travis/sql_syntax_checker.sh

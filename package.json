@@ -1,0 +1,32 @@
+{
+  "name": "atlantis",
+  "version": "0.1.0",
+  "description": "Slicing 🦀 and dicing oysters into 1s and 0s 🐠",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "deploy": "npm run build --prefix frontend &&  cp frontend/error.html frontend/dist/ && sls client deploy && sls deploy",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bryantbiggs/atlantis.git"
+  },
+  "author": "bryantbiggs",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bryantbiggs/atlantis/issues"
+  },
+  "homepage": "https://github.com/bryantbiggs/atlantis#readme",
+  "dependencies": {
+    "serverless": "^1.55.1",
+    "snyk": "^1.239.5"
+  },
+  "devDependencies": {
+    "serverless-domain-manager": "^3.3.0",
+    "serverless-finch": "^2.4.3",
+    "serverless-python-requirements": "^5.0.1"
+  },
+  "snyk": true
+}

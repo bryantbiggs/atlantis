@@ -1,0 +1,76 @@
+service: atlantis
+
+frameworkVersion: ">=1.54.0"
+
+custom:
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'us-east-1'}
+  environment: ${file(./env.yml)}
+  snsPrefix: ${self:custom.environment.SNS_PREFIX}-${self:custom.stage}
+  pythonRequirements:
+    dockerizePip: true
+  customDomain:
+    domainName: api.${self:custom.environment.DOMAIN}
+    certificateName: ${self:custom.environment.DOMAIN}
+    basePath: ""
+    stage: ${self:custom.stage}
+    createRoute53Record: true
+  client:
+    bucketName: ${self:custom.environment.DOMAIN}
+    distributionFolder: frontend/dist
+    indexDocument: index.html
+    errorDocument: error.html
+
+provider:
+  name: aws
+  runtime: python3.6
+  stage: ${self:custom.stage}
+  region: ${self:custom.region}
+  profile: ${self:service}
+  timeout: 120
+  logRetentionInDays: 14
+  deploymentBucket:
+    name: serverless.${self:service}.${self:provider.region}
+    serverSideEncryption: AES256
+  role: ${self:custom.environment.ROLE}
+  versionFunctions: false
+  environment:
+    REGION: ${self:custom.region}
+
+plugins:
+  - serverless-python-requirements
+  - serverless-domain-manager
+  - serverless-finch
+
+package:
+  exclude:
+    - ./**
+  include:
+    - ./backend/**
+
+functions:
+  s3FileUpload:
+    handler: s3_file.file_added
+    description: Creates SNS topic notification when a new file is uploaded to S3
+    environment:
+      EMIT_MESSAGE_TOPIC: ${self:custom.snsPrefix}-s3-file-uploaded
+    events:
+      - http:
+          path: file_upload/{file_name}
+          method: put
+          cors: true
+          integration: lambda
+          authorizer:
+            arn: ${self:custom.environment.COGNITO_ARN}
+          request:
+            paths:
+              file_name: true
+
+  uploadRecords:
+    handler: db_upload.upload_records
+    description: Upload records from S3 file to database
+    environment:
+      S3_BUCKET: ${self:custom.client.bucketName}
+      EMIT_MESSAGE_TOPIC: ${self:custom.snsPrefix}-db_records-inserted
+    events:
+      - sns: ${self:custom.snsPrefix}-s3-file-uploaded

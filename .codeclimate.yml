@@ -1,0 +1,18 @@
+version: "2"
+plugins:
+  pep8:
+    enabled: true
+    max-line-length: 120
+  radon:
+    enabled: true
+  eslint:
+    enabled: true
+exclude_paths:
+  - node_modules/**
+  - frontend/node_modules/**
+  - frontend/dist/**
+  - frontend/.eslintrc.js
+  - frontend/.prettierrc.js
+  - frontend/babel.config.js
+  - frontend/postcss.config.js
+  - frontend/vue.config.js
