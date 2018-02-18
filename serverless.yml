@@ -13,19 +13,23 @@ custom:
     createRoute53Record: true
   client:
     bucketName: ${self:custom.environment.DOMAIN}
-    distributionFolder: frontend
+    distributionFolder: frontend/dist
     indexDocument: index.html
     errorDocument: error.html
 
 provider:
   name: aws
-  stage: ${self:custom.stage}
-  versionFunctions: false
   runtime: python3.6
+  stage: ${self:custom.stage}
   region: us-east-1
-  role: ${self:custom.environment.ROLE}
+  profile: ${self:service}
   timeout: 120
-  deploymentBucket: serverless.${self:service}.${self:provider.region}
+  logRetentionInDays: 14
+  deploymentBucket:
+    name: serverless.${self:service}.${self:provider.region}
+    serverSideEncryption: AES256
+  role: ${self:custom.environment.ROLE}
+  versionFunctions: false
 
 plugins:
   - serverless-python-requirements
