@@ -1,19 +1,15 @@
 <template>
-  <footer class="main-footer">
-
+  <footer>
     <div class="container-wrapper md-layout-row">
-      <md-button class="md-raised" href="http://github.com/bryantbiggs/atlantis" target="_blank">Atlantis</md-button>
-      <md-button class="md-raised" href="http://github.com/bryantbiggs" target="_blank">Github</md-button>
-      <md-button class="md-raised" href="https://www.linkedin.com/in/bryantbiggs/" target="_blank">LinkedIn</md-button>
+      <md-button class="md-raised md-footer-button" href="http://github.com/bryantbiggs/atlantis" target="_blank">Atlantis</md-button>
+      <md-button class="md-raised md-footer-button" href="http://github.com/bryantbiggs" target="_blank">Github</md-button>
+      <md-button class="md-raised md-footer-button" href="https://www.linkedin.com/in/bryantbiggs/" target="_blank">LinkedIn</md-button>
     </div>
-
     <div class="container-wrapper md-layout-row">
       <p>All rights reserved Bryant Biggs 2018</p>
     </div>
-
   </footer>
 </template>
-
 
 <style scoped>
   footer {
@@ -29,14 +25,14 @@
     text-align: center;
   }
 
-  .md-raised {
-    color: #0b132b;
+  .md-footer-button {
+    color: #6fffe9;
+    background-color: #1c2541;
   }
-  
 </style>
 
 <script>
-export default {
-  name: 'Footer'
-}
+  export default {
+    name: 'Footer'
+  }
 </script>
