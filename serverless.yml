@@ -1,0 +1,53 @@
+service: atlantis
+
+frameworkVersion: ">=1.26.0"
+
+custom:
+  stage: ${opt:stage, 'dev'}
+  environment: ${file(./env.yml)}
+  customDomain:
+    domainName: api.${self:custom.environment.DOMAIN}
+    certificateName: ${self:custom.environment.DOMAIN}
+    basePath: ''
+    stage: ${self:custom.stage}
+    createRoute53Record: true
+  client:
+    bucketName: ${self:custom.environment.DOMAIN}
+    distributionFolder: frontend
+    indexDocument: index.html
+    errorDocument: error.html
+
+provider:
+  name: aws
+  stage: ${self:custom.stage}
+  versionFunctions: false
+  runtime: python3.6
+  region: us-east-1
+  role: ${self:custom.environment.ROLE}
+  timeout: 120
+  deploymentBucket: serverless.${self:service}.${self:provider.region}
+
+plugins:
+  - serverless-python-requirements
+  - serverless-domain-manager
+  - serverless-finch
+
+package:
+  include:
+    - atlantis/**
+  exclude:
+    - .github/**
+    - .travis/**
+    - node_modules/**
+    - .flake8
+    - LICENSE
+    - '*.yml*'
+    - '*.json'
+
+functions:
+  hello:
+    handler: backend/handler.hello
+    events:
+      - http:
+          path: hello
+          method: get

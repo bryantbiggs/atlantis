@@ -1,0 +1,28 @@
+{
+    "name": "atlantis",
+    "version": "0.1.0",
+    "description": "Slicing 🦀 and dicing oysters into 1s and 0s 🐠",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "deploy": "sls client deploy --aws-profile atlantis && sls deploy --aws-profile atlantis"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/bryantbiggs/atlantis.git"
+    },
+    "author": "bryantbiggs",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/bryantbiggs/atlantis/issues"
+    },
+    "homepage": "https://github.com/bryantbiggs/atlantis#readme",
+    "dependencies": {
+        "serverless": "^1.26.0"
+    },
+    "devDependencies": {
+        "serverless-domain-manager": "^2.3.0",
+        "serverless-finch": "^1.4.0",
+        "serverless-python-requirements": "^3.3.0"
+    }
+}

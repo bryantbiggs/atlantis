@@ -2,71 +2,105 @@
 
 A web application that loads records into a PostgreSQL database from an uploaded text file.
 
+[![serverless](http://public.serverless.com/badges/v3.svg)](http://www.serverless.com)
 [![Build Status](https://travis-ci.com/bryantbiggs/atlantis.svg?token=wxLkaZqzrqBdTjth4HdJ&branch=master)](https://travis-ci.com/bryantbiggs/atlantis)
 [![Maintainability](https://api.codeclimate.com/v1/badges/a668316c360493327748/maintainability)](https://codeclimate.com/repos/5a88578633cc3602a9000728/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/a668316c360493327748/test_coverage)](https://codeclimate.com/repos/5a88578633cc3602a9000728/test_coverage)
 
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
+The following instructions will help you setup your own project for development and testing purposes.
 
 ### Prerequisites
 
-- ##### virtualenv [optional]
+- #### AWS
 
-The python package `virtualenv` is a tool to create isolated Python environments. If you do not have `virtualenv` installed, execute the following:
+This project is deployed and developed with tools that rely on Amazon Web Services. You can use the [`aws-cli`](https://docs.aws.amazon.com/cli/latest/userguide/cli-config-files.html) interface to provision the credentials file or by performing the following steps;
+
+1. Create an `aws` directory with `credentials` and `config` files:
 
 ```bash
-  $ pip install virtualenv
-  $ virtualenv -p <path/to/local/python3.6.4+> <.nameofvirtualenv/>
+    $ mkdir ~/.aws
+    $ touch ~/.aws/credentials
+    $ touch ~/.aws/config
 ```
 
-It is not required to use `virtualenv` - `virtualenvwrapper` or other isolated environments are acceptable. The important note here is a working environment with Python 3.6.4+ and the modules listed in `requirements.txt` installed in that environment.
+2. Copy the following definition into the `credentials` file, filling in your specific values:
 
-- ##### direnv [optional]
+```
+[profile atlantis]
+aws_access_key_id=<YOUR-AWS-ACESS-KEY-ID>
+aws_secret_access_key=<YOUR-AWS-SECRET-ACCESS-KEY>
+```
 
-The application `direnv` enables us to inject variables into the application namespace via the bash native `export XXX=...`. Upon entering the directory containing a `.envrc` file via the command line, `direnv` will execute that file and load any variables and run any setup scripts provided in the config file. Upon leaving the directory (`cd ..`), it will also unset any exported environment variables to prevent leakage of environment variables into the operating systems current namespace.
+Copy the following definition into the `config` file (change `region` to suite):
 
-`direnv` is not required, but the environment variables contained within the `.envrc.example` file are required to be set in your environment namespace prior to running the application. If wish to install `direnv`, see the [documentaton here](https://github.com/direnv/direnv) to get setup.
+```
+[profile atlantis]
+region=us-east-1
+```
+
+- #### NPM
+
+The `serverless` framework is a Nodejs application and requires `npm` (>=5.x).
+
+Install the projects `serverless` dependencies locally by running the following command.
+
+```bash
+    $ npm i
+```
 
 ### Setup
 
-Execute the following series of commands to populate the projects `virtualenv` (virtual environment)
+1. Register a web domain through AWS Route53 or another domain provider
 
-First, create a copy of the `.envrc.example` file as `.envrc` and update the `.envrc` file with the appropriate values:
+2. Create an AWS S3 bucket with the same name as your registered domain - i.e. `mycoolwebsite.com` - and provision the bucket to host a static website (see more instructions [here](https://docs.aws.amazon.com/AmazonS3/latest/user-guide/static-website-hosting.html) for setting up S3 buckets for website hosting)
+
+3. Copy the `env.yml.example` file to `env.yml` and populate the associated values for your project:
 
 ```bash
-  $ cp .envrc.example .envrc && vim .envrc
-  $ direnv allow
+    $ cp env.yml.example env.yml && vim env.yml
 ```
 
-Note - Any new changes to the `.envrc` file will require the command `direnv allow` to be re-issued to permit the changes to take effect. The environment variables listed in the `.envrc.example` file are required for the project and should be populated with the appropriate values.
-
-Finally, activate the virtual environment created above and install the required modules:
+4. Create a Route53 record for API endpoint url using the `serverless-domain-manager` package:
 
 ```bash
-  $ source <.nameofvirtualenv>/bin/activate
-  $ pip install -r requirements.txt
+    $ sls create_domain --aws-profile atlantis
+```
+
+5. Upload static content to S3 bucket for website content using the `serverless-finch` package:
+
+```bash
+    $ sls client deploy --aws-profile atlantis
+```
+
+### Deployment
+
+To provision the necessary AWS resources and deploy the project:
+
+```base
+    $ sls deploy --aws-deploy atlantis
 ```
 
 ### Coding style tests
 
-- ##### Python
+- #### Python
 
 To run the Python linter and check your code against [PEP8 compliance](https://www.python.org/dev/peps/pep-0008/):
 
 ```bash
-  $ python3.6 -m flake8 <directory/>
+    $ pip install flake8
+    $ python3.6 -m flake8 <directory/>
 ```
 
 Where <directory> is the directory you want to analyze. To check specific files replace `<directory>/` with the specific file you wish to analyze.
 
-- ##### SQL
+- #### SQL
 
 To run the SQL linter and check your code against ANSI SQL standard compliance:
 ```bash
-  $ pip install pgsanity
-  $ pgsanity <file.sql>
+    $ pip install pgsanity
+    $ pgsanity <file.sql>
 ```
 
 Where `<file.sql>` is the SQL script/file you want to analyze.
