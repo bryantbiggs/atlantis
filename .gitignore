@@ -1,3 +1,14 @@
+# Environment
+env.yml
+
+# Serverless
+.serverless/
+.requirements/
+.requirements.zip
+site-packages
+node_modules/
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
