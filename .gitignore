@@ -1,5 +1,6 @@
 # Environment
 env.yml
+.envrc
 
 # Serverless
 .serverless/
