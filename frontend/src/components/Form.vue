@@ -1,6 +1,6 @@
 <template>
   <div class="upload-form">
-    <form class="md-layout">
+    <form enctype="multipart/form-data" class="md-layout">
       <md-card class="md-layout-item md-size-50 md-small-size-100">
         <md-card-header>
           <div class="md-title">Upload Data</div>
@@ -12,13 +12,13 @@
             <li>Please select a local *.tsv using the field below</li>
             <li>Click the `Upload` button</li>
           </ol>
-
           <md-field class="md-field-upload">
             <label>Data file</label>
-            <md-file v-model="file" placeholder="Select *.tsv file" />
+            <md-file id="file-chooser" v-model="file" accept=".csv,.tsv" placeholder="Select *.tsv file" />
           </md-field>
-
         </md-card-content>
+
+        <h3 v-if="uploading">...uploading</h3>
 
         <md-card-actions>
           <md-button type="submit" class="md-button md-raised" v-on:click="uploadFile">Upload</md-button>
@@ -30,6 +30,7 @@
 </template>
 
 <script>
+  import { s3 } from './aws_s3';
   export default {
     name: 'Form',
     data: () => ({
@@ -37,16 +38,34 @@
       uploading: false
     }),
     methods: {
+      addFile() {
+        // Upload file to S3
+        const fileChooser = document.getElementById('file-chooser');
+        if (!fileChooser.files.length) {
+          return alert('Please choose a file to upload first.');
+        }
+        const file = fileChooser.files[0];
+        const objKey = 'data/' + file.name;
+        s3.upload({
+          Key: objKey,
+          Body: file,
+          ACL: 'public-read'
+        }, function(err, data) {
+          if (err) {
+            return alert('There was an error uploading your file: ', err.message);
+          }
+        });
+      },
+      // Reset file selection field
       clearForm () {
         this.file = null
       },
       uploadFile () {
+        // Function triggered by button click event to perform upload steps
         this.uploading = true
-        window.setTimeout(() => {
-          console.log("TIMEOUT DONE");
-          this.uploading = false
-          this.clearForm()
-        }, 1500)
+        this.addFile()
+        this.clearForm()
+        this.uploading = false
       }
     }
   }
