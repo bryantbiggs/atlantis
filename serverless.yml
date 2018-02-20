@@ -50,6 +50,8 @@ functions:
   s3FileUpload:
     handler: s3_file.notify_file_upload
     description: Creates SNS topic notification when a new file is uploaded to S3
+    environment:
+      EMIT_MESSAGE_TOPIC: ${self:custom.snsPrefix}-s3-file-uploaded
     events:
       - http:
           path: file_upload/{file_name}
@@ -61,11 +63,12 @@ functions:
           request:
             paths:
               file_name: true
-              
-  validateFile:
-      handler: s3_file.validate_file
-      description: Validate the file contents match the database table data types
-      environment:
-        S3_BUCKET: ${self:custom.client.bucketName}
-      events:
-        - sns: ${self:custom.snsPrefix}-s3-file-uploaded
+
+  uploadRecords:
+    handler: db_upload.upload_records
+    description: Upload records from S3 file to database
+    environment:
+      S3_BUCKET: ${self:custom.client.bucketName}
+      EMIT_MESSAGE_TOPIC: ${self:custom.snsPrefix}-db_records-inserted
+    events:
+      - sns: ${self:custom.snsPrefix}-s3-file-uploaded
