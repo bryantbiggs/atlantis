@@ -5,6 +5,9 @@ frameworkVersion: ">=1.26.0"
 custom:
   stage: ${opt:stage, 'dev'}
   environment: ${file(./env.yml)}
+  snsPrefix: ${self:custom.environment.SNS_PREFIX}-${self:custom.stage}
+  pythonRequirements:
+    dockerizePip: true
   customDomain:
     domainName: api.${self:custom.environment.DOMAIN}
     certificateName: ${self:custom.environment.DOMAIN}
@@ -37,28 +40,35 @@ plugins:
   - serverless-finch
 
 package:
-  include:
-    - atlantis/**
   exclude:
-    - .github/**
-    - .travis/**
-    - node_modules/**
-    - .flake8
-    - LICENSE
-    - '*.yml*'
-    - '*.json'
+    - ./**
+  include:
+    - ./backend/**
 
 functions:
-  hello:
-    handler: backend/handler.hello
+
+  s3FileUpload:
+    handler: s3_file.file_added
+    description: Creates SNS topic notification when a new file is uploaded to S3
+    environment:
+      EMIT_MESSAGE_TOPIC: ${self:custom.snsPrefix}-s3-file-uploaded
     events:
       - http:
-          path: hello
-          method: get
-      - s3:
-          bucket: upload
-          event: s3:ObjectCreated:*
-          rules:
-            -  prefix: data/
-            -  suffix: .csv
-            -  suffix: .tsv
+          path: file_upload/{file_name}
+          method: put
+          cors: true
+          integration: lambda
+          authorizer:
+            arn: ${self:custom.environment.COGNITO_ARN}
+          request:
+            paths:
+              file_name: true
+
+  uploadRecords:
+    handler: db_upload.upload_records
+    description: Upload records from S3 file to database
+    environment:
+      S3_BUCKET: ${self:custom.client.bucketName}
+      EMIT_MESSAGE_TOPIC: ${self:custom.snsPrefix}-db_records-inserted
+    events:
+      - sns: ${self:custom.snsPrefix}-s3-file-uploaded

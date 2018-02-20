@@ -21,7 +21,7 @@ BEGIN;
 
     -- Customer table to capture each customer and their contact information (dimension table)
     CREATE TABLE customer (
-        id INTEGER NOT NULL PRIMARY KEY,
+        id BIGINT NOT NULL PRIMARY KEY,
         first_name TEXT,
         last_name TEXT,
         street_address TEXT,
@@ -34,7 +34,7 @@ BEGIN;
 
     -- Product table to capture each prodct and its cost (dimension table)
     CREATE TABLE product (
-        id INTEGER NOT NULL PRIMARY KEY,
+        id BIGINT NOT NULL PRIMARY KEY,
         product_name VARCHAR(100),
         cost DECIMAL(12,2)
     );
@@ -46,8 +46,8 @@ BEGIN;
     CREATE TYPE status AS ENUM ('new', 'canceled');
     CREATE TABLE sales (
         id SERIAL,
-        customer_id INTEGER NOT NULL REFERENCES customer(id),
-        product_id INTEGER NOT NULL REFERENCES product(id),
+        customer_id BIGINT NOT NULL REFERENCES customer(id),
+        product_id BIGINT NOT NULL REFERENCES product(id),
         purchase_status status,
         transaction_date TIMESTAMPTZ NOT NULL,
         CONSTRAINT transaction UNIQUE (customer_id, product_id, purchase_status, transaction_date)

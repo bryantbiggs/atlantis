@@ -15,7 +15,7 @@
 
 MIN_RANK=B
 
-RANKED_BELOW=$(radon mi . --min $MIN_RANK | wc -l)
+RANKED_BELOW=$(radon mi . -e "node_modules/*,frontend/*" --min $MIN_RANK | wc -l)
 
 if [ "$RANKED_BELOW" -gt "0" ]
 then
