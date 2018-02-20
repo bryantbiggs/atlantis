@@ -10,7 +10,7 @@
 from .sns_helpers import emit_sns_msg
 
 
-def notify_file_upload(event, _):
+def file_added(event, _):
     """Notify via SNS topic message when a file is uploaded to S3."""
 
     file_name = event["path"]["file_name"]

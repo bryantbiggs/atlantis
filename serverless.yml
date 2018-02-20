@@ -48,7 +48,7 @@ package:
 functions:
 
   s3FileUpload:
-    handler: s3_file.notify_file_upload
+    handler: s3_file.file_added
     description: Creates SNS topic notification when a new file is uploaded to S3
     environment:
       EMIT_MESSAGE_TOPIC: ${self:custom.snsPrefix}-s3-file-uploaded

@@ -19,9 +19,9 @@
 # | 41+      | F     | very high - error-prone, unstable block |
 # +----------+-------+-----------------------------------------+
 
-MIN_RANK=B
+MIN_RANK=C
 
-RANKED_BELOW=$(radon cc . --min $MIN_RANK | wc -l)
+RANKED_BELOW=$(radon cc . -e "node_modules/*,frontend/*" --min $MIN_RANK | wc -l)
 
 if [ "$RANKED_BELOW" -gt "0" ]
 then
