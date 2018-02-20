@@ -19,6 +19,6 @@ section such as this:
 
 ---
 
-### [v0.1.0] - TBD
+### [v0.1.0] - 2018-02-20
 #### Added
-- Initial release of the `atlantis` project
+- Initial "soft" release of the `atlantis` project
