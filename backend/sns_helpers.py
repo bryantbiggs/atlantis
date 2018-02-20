@@ -3,7 +3,7 @@
     SNS Helpers
     -----------
 
-    Module contains shared functionality for working with SNS topics
+    Module contains shared functionality for working with AWS SNS topics
 
 """
 
@@ -17,7 +17,7 @@ SNS_CLIENT = boto3.client('sns')
 EMIT_MESSAGE_TOPIC = os.environ.get('EMIT_MESSAGE_TOPIC')
 
 
-def emit_message(message, topic_arn=EMIT_MESSAGE_TOPIC):
+def emit_sns_msg(message, topic_arn=EMIT_MESSAGE_TOPIC):
     """Emits an SNS message to a given SNS topic ARN.
 
     :param message: JSON serializable Python object
@@ -31,7 +31,7 @@ def emit_message(message, topic_arn=EMIT_MESSAGE_TOPIC):
     SNS_CLIENT.publish(Message=json.dumps(message), TopicArn=topic_arn)
 
 
-def get_message(event):
+def get_sns_msg(event):
     """Returns a message object extracted from AWS SNS event.
 
     :param event: AWS event object

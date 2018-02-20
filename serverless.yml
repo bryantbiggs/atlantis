@@ -61,3 +61,11 @@ functions:
           request:
             paths:
               file_name: true
+              
+  validateFile:
+      handler: s3_file.validate_file
+      description: Validate the file contents match the database table data types
+      environment:
+        S3_BUCKET: ${self:custom.client.bucketName}
+      events:
+        - sns: ${self:custom.snsPrefix}-s3-file-uploaded
