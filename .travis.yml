@@ -31,7 +31,6 @@ branches:
     - /^greenkeeper/.*$/
 
 before_script:
-  - ./.travis/git_branch_checker.sh
   - "sudo apt-get install libecpg-dev"
   - ./.travis/create_db.sh
   - ./backend/db/init_db.sh
