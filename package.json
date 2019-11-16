@@ -5,9 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "deploy": "npm run build --prefix frontend &&  cp frontend/error.html frontend/dist/ && sls client deploy && sls deploy",
-    "snyk-protect": "snyk protect",
-    "prepare": "npm run snyk-protect"
+    "deploy": "npm run build --prefix frontend &&  cp frontend/error.html frontend/dist/ && sls client deploy && sls deploy"
   },
   "repository": {
     "type": "git",
@@ -20,13 +18,10 @@
   },
   "homepage": "https://github.com/bryantbiggs/atlantis#readme",
   "dependencies": {
-    "serverless": "^1.55.1",
-    "snyk": "^1.239.5"
+    "serverless": "^2.8.0"
   },
   "devDependencies": {
-    "serverless-domain-manager": "^3.3.0",
-    "serverless-finch": "^2.4.3",
-    "serverless-python-requirements": "^5.0.1"
-  },
-  "snyk": true
+    "serverless-finch": "^2.6.0",
+    "serverless-python-requirements": "^5.1.0"
+  }
 }

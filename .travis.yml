@@ -1,16 +1,16 @@
-dist: xenial
+dist: bionic
 
 language: python
 python:
-  - "3.7"
+  - "3.8"
 
 cache: pip
 
 addons:
-  postgresql: "10"
-
-services:
-  - postgresql
+  apt:
+    packages:
+      - postgresql-12
+      - postgresql-client-12
 
 env:
   global:
@@ -21,17 +21,20 @@ env:
     - CRUD_USER_PASSWORD=crudpassword
     - READ_USER_PASSWORD=readpassword
 
+before_install:
+  - sudo sed -i 's/port = 5433/port = 5432/' /etc/postgresql/12/main/postgresql.conf
+  - sudo cp /etc/postgresql/{9.3,12}/main/pg_hba.conf
+  - sudo pg_ctlcluster 12 main restart
+
 install:
-  - "pip install -r .travis/requirements.txt"
+  - pip install -r .travis/requirements.txt
 
 branches:
   only:
     - master
     - develop
-    - /^greenkeeper/.*$/
 
 before_script:
-  - "sudo apt-get install libecpg-dev"
   - ./.travis/create_db.sh
   - ./backend/db/init_db.sh
   - "psql -d $DB_NAME -a -f ./backend/db/migrations/0001_create_db.sql"
